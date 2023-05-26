@@ -151,7 +151,7 @@ resource "aws_lb_listener_rule" "siva-sonar-hostbased" {
 
   condition {
     host_header {
-      values = ["sonarqube.siva.quest"]
+      values = ["sonarqube.sainath.quest"]
     }
   }
 }
