@@ -1,8 +1,8 @@
 resource "aws_s3_bucket" "tfstatefile" {
-  bucket = "aws-remote-tfstatefile-files"
+  bucket = "aws-artifactory-devops-practice"
 
   tags = {
-    Name        = "aws-remote-tfstatefile-files"
+    Name        = "aws-artifactory-devops-practice"
     Environment = "Dev"
   }
 }
