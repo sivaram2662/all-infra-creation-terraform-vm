@@ -31,7 +31,7 @@ resource "aws_security_group" "ek-sg" {
     from_port       = 5601
     to_port         = 5601
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
   }
 
   ingress {
@@ -39,7 +39,7 @@ resource "aws_security_group" "ek-sg" {
     from_port       = 9200
     to_port         = 9200
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
     /* cidr_blocks = ["0.0.0.0/0"] */
   }
   ingress {
@@ -71,7 +71,7 @@ resource "aws_security_group" "ek-sg" {
     from_port       = 9200
     to_port         = 9200
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
     /* cidr_blocks = ["0.0.0.0/0"] */
   }
 
@@ -87,11 +87,6 @@ resource "aws_security_group" "ek-sg" {
     Name = "efk-sg"
   }
 }
-/* data "template_file" "elkuser" {
-  template = file("ek-user-data.sh")
-
-} */
-
 #instance
 resource "aws_instance" "elasticsearch-kibana" {
   ami           = var.ami_ubuntu
@@ -107,69 +102,3 @@ resource "aws_instance" "elasticsearch-kibana" {
     Name = "elasticsearch-kibana"
   }
 }
-
-# alb target-group
-resource "aws_lb_target_group" "siva-tg-ek" {
-  name     = "tg-elasticsearch"
-  port     = 9200
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.stage-vpc.id
-}
-
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-ek" {
-  target_group_arn = aws_lb_target_group.siva-tg-ek.arn
-  target_id        = aws_instance.elasticsearch-kibana.id
-  port             = 9200
-}
-
-
-
-# alb-listner_rule
-resource "aws_lb_listener_rule" "siva-ek-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
-  #   priority     = 98
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-ek.arn
-  }
-
-  condition {
-    host_header {
-      values = ["elasticsearch.sainath.quest"]
-    }
-  }
-} 
-
-# alb target-group
-resource "aws_lb_target_group" "siva-tg-kibana" {
-  name     = "kibana-target"
-  port     = 5601
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.stage-vpc.id
-}
-
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-kibana" {
-  target_group_arn = aws_lb_target_group.siva-tg-kibana.arn
-  target_id        = aws_instance.elasticsearch-kibana.id
-  port             = 5601
-}
-
-
-
- # alb-listner_rule
-resource "aws_lb_listener_rule" "siva-kibana-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
-  #   priority     = 98
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-kibana.arn
-  }
-
-  condition {
-    host_header {
-      values = ["kibana.sainath.quest"]
-    }
-  }
-} 

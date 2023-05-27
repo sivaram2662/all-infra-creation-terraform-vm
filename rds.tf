@@ -35,6 +35,23 @@ resource "aws_security_group" "siva-rds-sg" {
     security_groups = ["${aws_security_group.bastion.id}"]
 
   }
+ ingress {
+    description     = "this is inbound rule"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.frontend-sg.id}"]
+
+  }
+  ingress {
+    description     = "this is inbound rule"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.backend-sg.id}"]
+
+  }
+
 }
 resource "aws_db_subnet_group" "db-subnetgroup" {
   name = "db-subnetgroup"

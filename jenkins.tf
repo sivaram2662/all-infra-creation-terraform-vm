@@ -30,7 +30,7 @@ resource "aws_security_group" "jenkins" {
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
   }
   ingress {
     description = "this is inbound rule"
@@ -45,7 +45,7 @@ resource "aws_security_group" "jenkins" {
     from_port       = 9100
     to_port         = 9100
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.grafana.id}"]
+    security_groups = ["${aws_security_group.grafana-sg.id}"]
     /* cidr_blocks = ["0.0.0.0/0"] */
   }
   egress {
@@ -60,11 +60,6 @@ resource "aws_security_group" "jenkins" {
     Name = "jenkins"
   }
 }
-#apacheuserdata
-/* data "template_file" "jenkinsuser" {
-  template = file("jenkins.sh")
-
-} */
 # apache instance
 resource "aws_instance" "jenkins" {
   ami                    = var.ami
@@ -79,71 +74,3 @@ resource "aws_instance" "jenkins" {
     Name = "stage-jenkins"
   }
 }
-
-# alb target-group
-resource "aws_lb_target_group" "siva-tg-jenkins" {
-  name     = "tg-jenkins"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.stage-vpc.id
-}
-
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-jenkins" {
-  target_group_arn = aws_lb_target_group.siva-tg-jenkins.arn
-  target_id        = aws_instance.jenkins.id
-  port             = 8080
-}
-
-
-
-# alb-listner_rule
-resource "aws_lb_listener_rule" "siva-jenkins-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
-  #   priority     = 98
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-jenkins.arn
-  }
-
-  condition {
-    host_header {
-      values = ["jenkins.sainath.quest"]
-    }
-  }
-}
-
-/* 
-# alb target-group
-resource "aws_lb_target_group" "siva-tg-nodeexporter" {
-  name     = "tg-node"
-  port     = 9100
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.stage-vpc.id
-}
-
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-node-exporter" {
-  target_group_arn = aws_lb_target_group.siva-tg-nodeexporter.arn
-  target_id        = aws_instance.jenkins.id
-  port             = 9100
-}
-
-
-
-# alb-listner_rule
-resource "aws_lb_listener_rule" "siva-nodeexporter-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
-  #   priority     = 98
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-nodeexporter.arn
-  }
-
-  condition {
-    host_header {
-      values = ["node-exporter.siva.quest"]
-    }
-  }
-}
- */

@@ -24,7 +24,7 @@ resource "aws_security_group" "sonar" {
     from_port       = 9000
     to_port         = 9000
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
     /* cidr_blocks = ["0.0.0.0/0"] */
   }
 
@@ -40,7 +40,7 @@ resource "aws_security_group" "sonar" {
     from_port       = 9100
     to_port         = 9100
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.grafana.id}"]
+    security_groups = ["${aws_security_group.grafana-sg.id}"]
     /* cidr_blocks = ["0.0.0.0/0"] */
   }
   ingress {
@@ -70,11 +70,6 @@ resource "aws_security_group" "sonar" {
     Name = "sonar"
   }
 }
-#apacheuserdata
-/* data "template_file" "apacheuser" {
-  template = file("apache.sh")
-
-} */
 # apache instance
 resource "aws_instance" "sonar" {
   ami                    = var.ami_ubuntu
@@ -90,49 +85,18 @@ resource "aws_instance" "sonar" {
   }
 }
 
-/* # alb target-group
-resource "aws_lb_target_group" "siva-tg-apache" {
-  name     = "tg-apache"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.stage-vpc.id
-}
 
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-apache" {
-  target_group_arn = aws_lb_target_group.siva-tg-apache.arn
-  target_id        = aws_instance.apache.id
-  port             = 80
-}
-
-
-
-# alb-listner_rule
-resource "aws_lb_listener_rule" "siva-apache-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
-  #   priority     = 98
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-apache.arn
-  }
-
-  condition {
-    host_header {
-      values = ["apache.siva.quest"]
-    }
-  }
-} */
 
 # alb target-group
-resource "aws_lb_target_group" "siva-tg-sonar" {
+resource "aws_lb_target_group" "tg-sonar" {
   name     = "tg-sonar"
   port     = 9000
   protocol = "HTTP"
   vpc_id   = aws_vpc.stage-vpc.id
 }
 
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-sonar" {
-  target_group_arn = aws_lb_target_group.siva-tg-sonar.arn
+resource "aws_lb_target_group_attachment" "tg-attachment-sonar" {
+  target_group_arn = aws_lb_target_group.tg-sonar.arn
   target_id        = aws_instance.sonar.id
   port             = 9000
 }
@@ -140,13 +104,13 @@ resource "aws_lb_target_group_attachment" "siva-tg-attachment-sonar" {
 
 
 # alb-listner_rule
-resource "aws_lb_listener_rule" "siva-sonar-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
+resource "aws_lb_listener_rule" "sonar-hostbased" {
+  listener_arn = aws_lb_listener.alb-listener.arn
   #   priority     = 98
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-sonar.arn
+    target_group_arn = aws_lb_target_group.tg-sonar.arn
   }
 
   condition {

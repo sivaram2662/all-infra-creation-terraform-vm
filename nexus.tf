@@ -38,7 +38,7 @@ resource "aws_security_group" "nexus-sg" {
     from_port       = 8081
     to_port         = 8081
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.siva-alb-sg.id}"]
+    security_groups = ["${aws_security_group.alb-sg.id}"]
 
   }
   ingress {
@@ -46,7 +46,7 @@ resource "aws_security_group" "nexus-sg" {
     from_port       = 9100
     to_port         = 9100
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.grafana.id}"]
+    security_groups = ["${aws_security_group.grafana-sg.id}"]
   }
   ingress {
     description     = "this is inbound rule"
@@ -89,15 +89,15 @@ resource "aws_instance" "nexus" {
 }
 
 # alb target-group
-resource "aws_lb_target_group" "siva-tg-nexus" {
+resource "aws_lb_target_group" "tg-nexus" {
   name     = "tg-nexus"
   port     = 8081
   protocol = "HTTP"
   vpc_id   = aws_vpc.stage-vpc.id
 }
 
-resource "aws_lb_target_group_attachment" "siva-tg-attachment-nexus" {
-  target_group_arn = aws_lb_target_group.siva-tg-nexus.arn
+resource "aws_lb_target_group_attachment" "tg-attachment-nexus" {
+  target_group_arn = aws_lb_target_group.tg-nexus.arn
   target_id        = aws_instance.nexus.id
   port             = 8081
 }
@@ -105,13 +105,13 @@ resource "aws_lb_target_group_attachment" "siva-tg-attachment-nexus" {
 
 
 # alb-listner_rule
-resource "aws_lb_listener_rule" "siva-nexus-hostbased" {
-  listener_arn = aws_lb_listener.siva-alb-listener.arn
+resource "aws_lb_listener_rule" "nexus-hostbased" {
+  listener_arn = aws_lb_listener.alb-listener.arn
   #   priority     = 98
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.siva-tg-nexus.arn
+    target_group_arn = aws_lb_target_group.tg-nexus.arn
   }
 
   condition {
