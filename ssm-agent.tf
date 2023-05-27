@@ -28,7 +28,7 @@ resource "aws_iam_instance_profile" "ssm_agent_instance_profile" {
 }
 
 resource "aws_iam_role" "ssm_agent_role" {
-  name = "SSMAgentRole"
+  name               = "SSMAgentRole"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

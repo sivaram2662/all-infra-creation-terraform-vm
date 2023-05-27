@@ -90,7 +90,7 @@ resource "aws_lb_target_group_attachment" "siva-tg-attachment-apache" {
 
 
 
-# alb-listner_rule
+ # alb-listner_rule
 resource "aws_lb_listener_rule" "siva-apache-hostbased" {
   listener_arn = aws_lb_listener.siva-alb-listener.arn
   #   priority     = 98
@@ -105,4 +105,4 @@ resource "aws_lb_listener_rule" "siva-apache-hostbased" {
       values = ["apache.sainath.quest"]
     }
   }
-}
+} 

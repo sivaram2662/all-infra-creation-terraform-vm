@@ -108,8 +108,6 @@ resource "aws_instance" "elasticsearch-kibana" {
   }
 }
 
-
-
 # alb target-group
 resource "aws_lb_target_group" "siva-tg-ek" {
   name     = "tg-elasticsearch"
@@ -141,7 +139,7 @@ resource "aws_lb_listener_rule" "siva-ek-hostbased" {
       values = ["elasticsearch.sainath.quest"]
     }
   }
-}
+} 
 
 # alb target-group
 resource "aws_lb_target_group" "siva-tg-kibana" {
@@ -159,7 +157,7 @@ resource "aws_lb_target_group_attachment" "siva-tg-attachment-kibana" {
 
 
 
-# alb-listner_rule
+ # alb-listner_rule
 resource "aws_lb_listener_rule" "siva-kibana-hostbased" {
   listener_arn = aws_lb_listener.siva-alb-listener.arn
   #   priority     = 98
@@ -174,4 +172,4 @@ resource "aws_lb_listener_rule" "siva-kibana-hostbased" {
       values = ["kibana.sainath.quest"]
     }
   }
-}
+} 

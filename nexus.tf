@@ -11,7 +11,7 @@ resource "aws_security_group" "nexus-sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-   ingress {
+  ingress {
     description     = "this is inbound rule"
     from_port       = 22
     to_port         = 22
