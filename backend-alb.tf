@@ -24,7 +24,7 @@ resource "aws_security_group" "backend-alb-sg" {
   }
 resource "aws_lb" "alb4" {
     name               = "backend-alb"
-    internal           = true
+    internal           = false
     load_balancer_type = "application"
     security_groups    = [aws_security_group.alb-sg.id]
     subnets            = ["${aws_subnet.publicsubnet[0].id}", "${aws_subnet.publicsubnet[1].id}", "${aws_subnet.publicsubnet[2].id}"]
